@@ -1,0 +1,90 @@
+---
+/**
+ * Simple Image Component
+ *
+ * @param {string} [src] - img src attribution
+ * @param {string} [alt] - img alt attribution
+ * @param {number} [width] - img width attribution
+ * @param {number} [height] - img height attribution
+ * @param {string} [class] - html class attribution
+ * @param {string} [emoji] - Unocode emoji string
+ * @param {boolean} [zoomable] - {@link https://medium-zoom.francoischalifour.com/}
+ */
+
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props {
+  src?: string
+  alt?: string
+  width?: number
+  height?: number
+  class?: string
+  emoji?: string
+  zoomable?: boolean
+  attrs?: Omit<
+    HTMLAttributes<'img'>,
+    'src' | 'alt' | 'width' | 'height' | 'class' | 'loading' | 'decoding'
+  >
+}
+
+const { src, alt, width, height, class: className, emoji, zoomable, ...attrs } = Astro.props
+---
+
+{
+  emoji && (
+    <span
+      class:list={['inline-flex items-center justify-center', className]}
+      style={{
+        width: width || 'auto',
+        height: height || 'auto',
+      }}
+    >
+      {emoji}
+    </span>
+  )
+}
+
+{
+  !emoji && src && (
+    <img
+      src={src}
+      width={width}
+      height={height}
+      alt={alt || 'Undefined image name'}
+      class={className}
+      data-zoomable={zoomable ?? false}
+      loading="lazy"
+      decoding="async"
+      {...attrs}
+    />
+  )
+}
+
+<script>
+  import mediumZoom from 'medium-zoom'
+
+  function getMediumZoomMargin() {
+    const width = window.innerWidth
+
+    if (width < 500) {
+      return 8
+    } else if (width < 800) {
+      return 20
+    } else if (width < 1280) {
+      return 30
+    } else if (width < 1600) {
+      return 40
+    } else if (width < 1920) {
+      return 48
+    } else {
+      return 72
+    }
+  }
+
+  const zoom = mediumZoom({
+    background: 'rgba(0, 0, 0, 0.8)',
+    margin: getMediumZoomMargin(),
+  })
+
+  zoom.attach('[data-zoomable]')
+</script>
