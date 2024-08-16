@@ -30,15 +30,16 @@ export default {
     '',
     '<TYPES>^(node:)',
     '<TYPES>',
+    '<TYPES>^@/(.*)$', // for @/types
     '<TYPES>^[.]',
     '',
     '<BUILTIN_MODULES>', // Node.js built-in modules
     '^(astro:)', // Astro built-in modules
     '<THIRD_PARTY_MODULES>',
-    '^(@utils|@data)/(.*)$', // local modules
+    '^(@utils|@data)(/.*)$', // local modules
+    '^@/(.*)$', // consts
     '',
-    '^(@component|@layouts)/(.*)$',
+    '^(@components|@layouts)(/.*)$',
     '^[./]',
-    '',
   ],
 }
