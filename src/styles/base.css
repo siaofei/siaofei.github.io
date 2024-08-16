@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Recoleta';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/fonts/recoleta/Recoleta-Medium.eot');
+  src:
+    url('/fonts/recoleta/Recoleta-Medium.woff2') format('woff2'),
+    url('/fonts/recoleta/Recoleta-Medium.woff') format('woff'),
+    url('/fonts/recoleta/Recoleta-Medium.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-SemiBold.eot');
+  src:
+    url('/fonts/recoleta/Recoleta-SemiBold.woff2') format('woff2'),
+    url('/fonts/recoleta/Recoleta-SemiBold.woff') format('woff'),
+    url('/fonts/recoleta/Recoleta-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: bold;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    font-size: 14.5px;
+  }
+}
+
+[x-cloak] {
+  display: none !important;
+}
