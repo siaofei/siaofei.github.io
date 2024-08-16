@@ -1,16 +1,30 @@
 ---
+import type { Metadata } from '@layouts/BaseLayout.astro'
 
+import me from '@data/me'
+import { bodyPadding, containerWide } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import HeaderIndex from '@components/header/HeaderIndex.astro'
+import ScrollToTop from '@components/widgets/ScrollToTop.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+import '@styles/base.css'
+
+const metadata: Metadata = {
+  title: '嘿！我是刘晓飞',
+  description: me.quote,
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout metadata={metadata}>
+  <div class="thi-bg-stone">
+    <HeaderIndex />
+    <Container class:list={[bodyPadding, containerWide]}>
+      <!-- Home page content -->
+    </Container>
+    <Footer footerType="gray" />
+    <ScrollToTop />
+  </div>
+</BaseLayout>
