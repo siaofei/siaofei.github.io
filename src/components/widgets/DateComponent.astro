@@ -1,0 +1,127 @@
+---
+/**
+ * Date Component
+ *
+ * @description Format a date string that conform to ISO 8501 format.
+ * @see https://en.wikipedia.org/wiki/ISO_8601
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
+ *
+ * @param {string} dateString - Transfer this into Date object and dayjs.
+ * @param {boolean} [onlyLabel] - If it not exists or false, only print {@link dateLabel}.
+ * @param {boolean} [humanize] - If it not exists or false, use {@link format} format {@link dateString}.
+ * @param {string} [format='dd/MM/yyy'] - Format {@link dateString} by {@link https://day.js.org/docs/en/display/format}[dayjs].
+ * @param {Object} [humanizeOpts] - Work only {@link humanize}} is true.
+ * @param {string} [humanizeOpts.today] - If it not exists, default is 'today'. Eg: '今天'.
+ * @param {string} [humanizeOpts.yesterday] - If it not exists, default is 'yesterday'. Eg: '昨天'.
+ * @param {string} [humanizeOpts.daysAgo] - Eg: If it not exists, default is 'days ago'. '天前'.
+ * @param {string} [humanizeOpts.weeksAgo] - If it not exists, default is 'weeks ago'. Eg: '周前'.
+ * @param {string} [humanizeOpts.monthAgo] - If it not exists, default is 'months ago'. Eg: '月前'.
+ * @param {string} [class] - Date Component container class properties.
+ *
+ * @example
+ * // display humanized date: today
+ * <DateComponent dateString={new Date().toISOString()} humanize={true} />
+ *
+ * @example
+ * // display format date: May/24/7
+ * <DateComponent dateString="2024-05-07" format={'MMM/yy/d'}
+ */
+
+interface Props {
+  dateString: string // used in new Date() and dayjs
+  dateLabel?: string // Eg: 'Updated at:'
+  format?: string
+  class?: string
+  humanize?: boolean
+  onlyLabel?: boolean
+  humanizeOpts?: {
+    today?: string
+    yesterday?: string
+    daysAgo?: string
+    weeksAgo?: string
+    monthsAgo?: string
+  }
+}
+
+const {
+  dateString,
+  dateLabel,
+  format,
+  class: className,
+  humanize,
+  onlyLabel,
+  humanizeOpts,
+} = Astro.props
+---
+
+<span class={className}>
+  {
+    !onlyLabel && (
+      <date-component
+        data-date-label={dateLabel}
+        data-date-string={dateString}
+        data-format={format}
+        data-humanize={humanize}
+        data-today={humanizeOpts?.today}
+        data-yesterday={humanizeOpts?.yesterday}
+        data-days-ago={humanizeOpts?.daysAgo}
+        data-weeks-ago={humanizeOpts?.weeksAgo}
+        data-months-ago={humanizeOpts?.monthsAgo}
+      />
+    )
+  }
+</span>
+
+<script>
+  import dayjs from 'dayjs'
+
+  class DateComponent extends HTMLElement {
+    constructor() {
+      super()
+    }
+
+    connectedCallback() {
+      const { dateLabel, dateString, format, humanize } = this.dataset
+      const humanizeOpts = {
+        today: this.dataset.today,
+        yesterday: this.dataset.yesterday,
+        daysAgo: this.dataset.daysAgo,
+        weeksAgo: this.dataset.weeksAgo,
+        monthsAgo: this.dataset.monthsAgo,
+      }
+
+      if (!dateString) {
+        return
+      }
+
+      const date = new Date(dateString)
+      const today = new Date()
+      const diffTime = Math.abs(today.getTime() - date.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      const fullDate = dayjs(dateString).format(format || 'DD/MM/YYYY')
+
+      let humanized = ''
+      if (diffDays <= 1) {
+        humanized = humanizeOpts?.today || 'today'
+      } else if (diffDays <= 2) {
+        humanized = humanizeOpts?.yesterday || 'yesterday'
+      } else if (diffDays <= 7) {
+        humanized = `${diffDays} ${humanizeOpts?.daysAgo || 'days ago'}`
+      } else if (diffDays <= 13) {
+        humanized = `${Math.floor(diffDays / 7)} ${humanizeOpts?.weeksAgo || 'week ago'}`
+      } else if (diffDays <= 30) {
+        humanized = `${Math.floor(diffDays / 7)} ${humanizeOpts?.weeksAgo || 'weeks ago'}`
+      } else if (diffDays <= 59) {
+        humanized = `${Math.floor(diffDays / 30)} ${humanizeOpts?.monthsAgo || 'month ago'}`
+      } else if (diffDays <= 365) {
+        humanized = `${Math.floor(diffDays / 30)} ${humanizeOpts?.monthsAgo || 'months ago'}`
+      } else {
+        humanized = fullDate
+      }
+
+      this.innerText = `${dateLabel ? dateLabel + ' ' : ''}${humanize === undefined ? fullDate : humanized}`
+    }
+  }
+
+  customElements.define('date-component', DateComponent)
+</script>
