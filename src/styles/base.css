@@ -32,6 +32,87 @@
   }
 }
 
+@layer components {
+  .thi-bg {
+    @apply bg-white;
+  }
+
+  /**
+   * Don't forget to change manually for "wave-stone" and "wave-footer-stone"
+   * classes in tailwind.config.js
+   */
+  .thi-bg-stone {
+    @apply bg-stone-100;
+  }
+
+  .thi-text-color {
+    @apply text-main;
+  }
+
+  .thi-text-rainbow {
+    @apply bg-gradient-to-r from-[#ff88c3] to-violet-400 bg-clip-text text-transparent;
+  }
+
+  /* Display as normal text except hoving or on small screen */
+  .thi-link-normal {
+    @apply md:thi-text-color w-fit text-link md:hover:text-pink-500;
+  }
+  /* For bg always in dark mode */
+  .thi-link-normal-always-dark {
+    @apply w-fit text-[#ffd479] md:text-[#f8fafc] md:hover:text-[#ffd479];
+  }
+
+  .thi-link {
+    @apply text-link transition-colors duration-150 hover:text-pink-500;
+  }
+  .thi-link-always-dark {
+    @apply text-[#ffd479] transition-colors duration-150 hover:text-pink-300;
+  }
+
+  .thi-transition-dark {
+    @apply transition-colors duration-200 ease-in-out;
+  }
+
+  .thi-box-code {
+    @apply thi-transition-dark thi-bg thi-text-color rounded-lg shadow-lg;
+  }
+
+  .thi-badge-code {
+    @apply thi-transition-dark thi-text-color flex h-6 w-fit items-center justify-center rounded-md border bg-stone-100 px-1 align-baseline text-base shadow-sm transition duration-200 ease-in-out hover:-translate-y-0.5;
+  }
+
+  .thi-title {
+    @apply text-3xl font-semibold text-[#f8fafc];
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px black;
+  }
+  .text-shadow-md {
+    text-shadow: 4px 4px 8px black;
+  }
+  .text-shadow-lg {
+    text-shadow: 15px 15px 30px black;
+  }
+  .text-shadow-none {
+    text-shadow: none;
+  }
+  .bg-wave-top-white {
+    @apply after:bg-wave after:block after:h-8 after:w-full;
+  }
+  .bg-wave-bottom-white {
+    @apply before:bg-wave-footer before:block before:h-8 before:w-full;
+  }
+  .bg-wave-top-stone {
+    @apply after:bg-wave-stone after:block after:h-8 after:w-full;
+  }
+  .bg-wave-bottom-stone {
+    @apply before:bg-wave-footer-stone before:block before:h-8 before:w-full;
+  }
+}
+
 [x-cloak] {
   display: none !important;
 }
