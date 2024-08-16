@@ -1,0 +1,73 @@
+---
+/**
+ * Image Component
+ *
+ * @description This component is used for all image-realted purposes.
+ * For example, featured images, book cover image, etc. Below is the order:
+ * 1. if {@link image.imageMetadata} exists, then use it.
+ * 2. elif {@link image.sourceUrl} exists, then use it.
+ * 3. elif {@link defaultImage} exists, then use it.
+ * 4. else return null.
+ *
+ * Note: if {@link image.sourceUrl} uses images in the `public` folder,
+ * you should point it's {@link width} and {@link height} attributions,
+ * or this component will simply use defalut value (both are 30).
+ *
+ * @param {(ImageType|null)} [image]
+ * @param {string} [image.sourceUrl] - Used for remote and public/ image.
+ * @param {number} [image.width] - Used when image from `public/`. If not exists, default is 30.
+ * @param {number} [image.height] - Used when image from `public/`. If not exists, default is 30.
+ * @param {ImageMetadata} [image.imageMetadata] - Used with local imported image.
+ * @param {ImageMetadata} [defaultImage] - Used with local imported image.
+ * @param {string} [alt] - If not exists, default is 'Unnamed image'.
+ * @param {string} [class] - Image class properties.
+ * @param {Omit<ImgAttributes, 'class' | 'alt'>} [imageProps] - other Image component accept properties.
+ */
+
+import type { ImageType } from '@/types'
+import type { ImageMetadata } from 'astro'
+import type { ImgAttributes } from 'astro:assets'
+
+import { Image } from 'astro:assets'
+
+interface Props {
+  image?: ImageType
+  defaultImage?: ImageMetadata
+  alt?: string
+  class?: string
+  imageProps?: Omit<ImgAttributes, 'class' | 'alt'>
+}
+
+const { image, defaultImage, alt, class: className, imageProps } = Astro.props
+---
+
+{
+  image?.imageMetadata ?
+    <Image
+      alt={alt || 'Unnamed image'}
+      src={image.imageMetadata}
+      class={className}
+      {...imageProps}
+    />
+  : image?.sourceUrl && image?.sourceUrl.startsWith('/') ?
+    <Image
+      alt={alt || 'Unnamed image'}
+      src={image.sourceUrl}
+      inferSize
+      class={className}
+      width={image.width || 250}
+      height={image.height || 250}
+      {...imageProps}
+    />
+  : image?.sourceUrl ?
+    <Image
+      alt={alt || 'Unnamed image'}
+      src={image.sourceUrl}
+      inferSize
+      class={className}
+      {...imageProps}
+    />
+  : defaultImage ?
+    <Image alt={alt || 'Unnamed image'} src={defaultImage} class={className} {...imageProps} />
+  : null
+}
