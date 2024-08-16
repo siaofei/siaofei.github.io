@@ -5,6 +5,20 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.formatOnSave": true,
+  "css.validate": false, // used for @tailwindcss
+  // used for @tailwindcss vscode extension
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  // used for @tailwindcss vscode extension
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  // legacy options:
+  // "eslint.validate": ["javascript", "astro", "typescript"],
+  "eslint.probe": ["javascript", "typescript", "astro", "markdown"],
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.tabSize": 2,
   "editor.rulers": [100],
   "search.exclude": {
