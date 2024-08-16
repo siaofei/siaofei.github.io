@@ -1,0 +1,24 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.documentSelectors": ["**/*.astro"],
+  "[astro]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.rulers": [100],
+  "search.exclude": {
+    "**/dist": true
+  },
+  "files.exclude": {
+    "**/.astro": true,
+    "**/.git": true,
+    "**/node_modules": true
+  },
+  "search.useIgnoreFiles": false,
+  "explorer.excludeGitIgnore": false,
+  "editor.stablePeek": false,
+  "editor.wordWrap": "off",
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": true
+}
