@@ -60,7 +60,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 
 const { post } = Astro.props
 
-const { headings, Content } = await post.render()
+const { headings, Content, remarkPluginFrontmatter } = await post.render()
 
 const metadata = {
   title: post.data.title,
@@ -72,7 +72,13 @@ const asideClass = ['hidden 2xl:block flex-1', 'h-[calc(100vh-130px)] sticky top
 
 <BaseLayout metadata={metadata}>
   <div class="animate-fadeIn">
-    <PostHeader post={post} />
+    <PostHeader
+      post={post}
+      options={{
+        minutesRead: remarkPluginFrontmatter.minutesRead,
+        wordCount: remarkPluginFrontmatter.wordCount,
+      }}
+    />
 
     <div class:list={['flex justify-center', bodyPadding]}>
       <aside class:list={[asideClass]}>

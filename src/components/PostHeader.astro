@@ -2,8 +2,6 @@
 /**
  * Post Header Component
  *
- * @todo reading time & words counter
- *
  * This component renders the header section of a blog post, including the title,
  * date, tags, and an optional hero icon. It can also conditionally hide metadata
  * or apply a discrete styling option.
@@ -31,9 +29,10 @@ interface Props {
   post: CollectionEntry<'posts'>
   hideMeta?: boolean
   discreteStyle?: boolean
+  options?: Record<string, any>
 }
 
-const { post, hideMeta, discreteStyle } = Astro.props
+const { post, hideMeta, discreteStyle, options } = Astro.props
 
 const tags = await getEntries(post.data.tags)
 ---
@@ -68,13 +67,15 @@ const tags = await getEntries(post.data.tags)
           </div>
 
           {/* Text word count */}
-          <div>
+          <div class="flex items-center gap-2 text-base opacity-80">
             <Icon name="TextWordCount" />
+            {options?.wordCount}
           </div>
 
           {/* Reading Time */}
-          <div>
+          <div class="flex items-center gap-2 text-base opacity-80">
             <Icon name="OutlineTimer" />
+            {options?.minutesRead}
           </div>
 
           {/* added */}
@@ -84,7 +85,7 @@ const tags = await getEntries(post.data.tags)
               humanize={true}
               dateString={post.data.createdDate}
               dateLabel="added"
-              format="MM dd, yyyy"
+              format="MM DD, YYYY"
             />
           </div>
 
