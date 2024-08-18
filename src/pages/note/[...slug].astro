@@ -41,6 +41,7 @@ import Container from '@components/Container.astro'
 import Footer from '@components/Footer.astro'
 import PostAside from '@components/PostAside.astro'
 import PostHeader from '@components/PostHeader.astro'
+import PostToc from '@components/PostToc.astro'
 import ScrollToTop from '@components/widgets/ScrollToTop.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
 
@@ -59,7 +60,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 
 const { post } = Astro.props
 
-const { Content } = await post.render()
+const { headings, Content } = await post.render()
 
 const metadata = {
   title: post.data.title,
@@ -95,7 +96,9 @@ const asideClass = ['hidden 2xl:block flex-1', 'h-[calc(100vh-130px)] sticky top
       </Container>
 
       <aside class:list={[asideClass]}>
-        <PostAside position="right" />
+        <PostAside position="right">
+          <PostToc defaultOpenToc={true} tocs={headings} labelTocTitle="笔记大纲" />
+        </PostAside>
       </aside>
     </div>
     <Footer footerType="white" />
