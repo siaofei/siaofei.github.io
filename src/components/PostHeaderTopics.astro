@@ -1,0 +1,50 @@
+---
+/**
+ * Renders a list of tags with optional styling and an icon.
+ *
+ * @param {CollectionEntry<'topics'>[]} tags - Array of tags to display.
+ * @param {string} [class] - Optional additional CSS classes for the container.
+ * @param {string} [TiTagClass] - Optional CSS classes for the TiTag icon.
+ * @param {string} [tagClass] - Optional CSS classes for each tag.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { Icon } from 'astro-icon/components'
+import { getUri, makeSlugText } from '@utils/helpers'
+
+interface Props {
+  tags: CollectionEntry<'topics'>[]
+  class?: string
+  TiTagClass?: string
+  tagClass?: string
+}
+
+const { tags, class: className, TiTagClass, tagClass } = Astro.props
+
+const topTagClass = [
+  'flex items-center justify-center rounded-2xl px-3 py-0.5 ',
+  'hover:-translate-y-0.5 transition-all duration-300 ',
+  'font-bold text-xs uppercase whitespace-nowrap',
+]
+---
+
+<div class:list={['flex flex-wrap items-center gap-2', className]}>
+  {tags.length > 0 && <Icon name="TiTag" class={TiTagClass ?? 'text-lg text-gray-600'} />}
+  {
+    tags.length > 0 &&
+      tags.map((tag) => (
+        <a
+          class:list={[
+            { 'tooltip-auto': tag.data.longName },
+            topTagClass,
+            tagClass ?? 'border border-slate-300 bg-white text-slate-600',
+          ]}
+          href={getUri('tag', makeSlugText(tag.id)) || '/'}
+          date-title={tag.data.longName}
+        >
+          {tag.data.name}
+        </a>
+      ))
+  }
+</div>

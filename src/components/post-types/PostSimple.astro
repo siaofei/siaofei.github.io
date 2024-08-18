@@ -1,0 +1,172 @@
+---
+/**
+ * Post Simple Comonent
+ *
+ * Template for rendering simple post entries on the `/notes/` page.
+ * Optional parameters default to `undefined` unless otherwise specified.
+ *
+ * @param {CollectionEntry<'posts'>} post - The post to display.
+ * @param {PostSimpleOpts} [options] - Configuration options for the post. All of which are valid in `CommonPostTypeOpts`.
+ * @param {boolean} [options.hideDate=false] - Hides the post date if `true`.
+ * @param {boolean} [options.customIconSlot=false]  - Enables a slot for custom icons.
+ * @param {string} [options.draftLabel='draft'] - Label for draft posts.
+ * @param {string} [options.tooltipDraftLabel='The content is not so good yet'] - Tooltip for the draft label.
+ * @param {boolean} [options.humanizeDate=false] - Displays the date in a readable format.
+ * @param {string} [options.wellWrittenLabel='Well written, verified by the author'] - Label for well-written posts.
+ * @param {string} [options.blogLabel='A blog post'] - Label for blog posts.
+ * @param {boolean} [options.showPinned=false] - Show pinned posts prominently.
+ */
+
+import type { CommonPostTypeOpts } from '@components/PostList.astro'
+import type { CollectionEntry } from 'astro:content'
+
+import { Icon } from 'astro-icon/components'
+import { getUri } from '@utils/helpers'
+
+import DateComponent from '@components/widgets/DateComponent.astro'
+
+export type PostSimpleOpts = CommonPostTypeOpts & {
+  hideDate?: boolean
+  customIconSlot?: boolean
+  draftLabel?: string
+  tooltipDraftLabel?: string
+  humanizeDate?: boolean
+  wellWrittenLabel?: string
+  blogLabel?: string
+  showPinned?: boolean
+}
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  options?: PostSimpleOpts
+}
+
+const { post, options } = Astro.props
+---
+
+<div
+  class="group hover:bg-slate-50"
+  x-data="usePostDateStatus"
+  data-created-date={post.data.createdDate}
+  data-modifed-date={post.data?.date}
+  data-within-days={options?.maxDaysWithin || 7}
+>
+  <a
+    class:list={[options?.fontClass, 'flex items-start gap-3 p-4']}
+    href={getUri('note', post.slug) || '/'}
+  >
+    <div
+      class:list={[
+        'relative mt-[3px] text-slate-600',
+        {
+          'tooltip-auto': post.data.wellWritten || post.data.type === 'blog',
+        },
+      ]}
+      data-title={post.data.type === 'blog' ? (options?.blogLabel ?? 'A blog post')
+      : post.data.wellWritten ?
+        (options?.wellWrittenLabel ?? 'Well written, verified by the author')
+      : undefined}
+    >
+      {options?.customIconSlot && (!options.showPinned || !post.data.pinned) && <slot />}
+      {
+        (!options?.showPinned || !post.data.pinned) && (
+          <Fragment>
+            {post.data.type === 'note' && <Icon name="HiOutlineDocumentText" class="text-xl" />}
+            {post.data.type === 'blog' && <Icon name="BlogIcon" class="text-xl text-slate-600" />}
+          </Fragment>
+        )
+      }
+      {options?.showPinned && post.data.pinned && <Icon name="BsPinAngleFill" class="text-xl" />}
+      {
+        post.data.wellWritten && post.data.type !== 'blog' && (
+          <span class="absolute bottom-[-5px] right-[-5px] bg-transparent">
+            <Icon name="HiMiniCheckBadge" class="text-sm text-gray-400" />
+          </span>
+        )
+      }
+    </div>
+
+    <div class="flex flex-1 flex-col items-start justify-between gap-x-3 gap-y-1.5 md:flex-row">
+      <h3 class="flex-1">
+        {/* date status on mobile size */}
+        {
+          post.data.date && (
+            <span
+              class:list={[
+                'mr-1.5 inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[0.7rem] md:hidden',
+              ]}
+              x-bind:class="{ 
+                'bg-green-200 text-green-900': status === 'updatedWithin',
+                'bg-amber-200 text-amber-900': status === 'new', 
+              }"
+              x-text="status === 'new' ? 'new' : 'updated'"
+              x-cloak
+            />
+          )
+        }
+        {/* title */}
+        {post.data.title}
+        {/* draft */}
+        {
+          post.data.draft && (
+            <span
+              class:list={[
+                'tooltip-auto rounded-md bg-slate-100 px-2 py-0 text-[0.8rem] text-slate-600',
+              ]}
+              data-title={options?.tooltipDraftLabel || 'The content is not so good yet'}
+            >
+              {options?.draftLabel || 'draft'}
+            </span>
+          )
+        }
+      </h3>
+      {/* date status on big screen */}
+      {
+        (post.data.createdDate || post.data.date) && (
+          <div class="hidden items-center gap-2 md:flex">
+            {post.data.date && (
+              <div
+                class:list={[
+                  'items-center gap-1 whitespace-nowrap rounded-md px-3 py-0.5 text-[0.8rem]',
+                ]}
+                x-bind:class="{
+                  'bg-slate-200 text-slate-800': status === 'updated',
+                  'bg-green-200 text-green-900': status === 'updatedWithin',
+                }"
+                x-show="status === 'updated' || status === 'updatedWithin'"
+                x-cloak
+              >
+                <DateComponent
+                  dateString={post.data.date}
+                  format="MMM DD, YYYY"
+                  humanize={options?.humanizeDate}
+                  dateLabel={options?.updatedOnLabel || 'updated'}
+                />
+              </div>
+            )}
+
+            <div
+              class="whitespace-nowrap rounded-md bg-amber-200 px-3 py-0.5 text-[0.8rem] text-amber-900"
+              x-show="status === 'new'"
+              x-cloak
+            >
+              {options?.newLabel || 'new'}
+            </div>
+
+            {post.data.createdDate && (
+              <DateComponent
+                class="hidden text-[0.8rem] text-slate-500 group-hover:text-slate-700 md:flex"
+                dateString={post.data.createdDate}
+                format="MMM DD, YYYY"
+                humanize={options?.humanizeDate}
+                dateLabel={options?.addedOnLabel || 'added'}
+              />
+            )}
+          </div>
+        )
+      }
+    </div>
+  </a>
+</div>
+
+<script src="../../scripts/usePostDateStatus.ts"></script>

@@ -19,11 +19,11 @@ export const MENUS: MenuType[] = [
     uri: '/notes/',
   },
   {
-    name: '文章',
+    name: '博客',
     uri: '/blogs/',
   },
   {
-    name: '标签',
+    name: '话题',
     uri: '/tags/',
   },
   {

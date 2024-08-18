@@ -1,0 +1,69 @@
+---
+/**
+ * Post List
+ *
+ * Renders a list of posts using a specified format and components based on post type.
+ *
+ * @todo carousel list style
+ *
+ * @param {PostListStyle} [listStyle]
+ * @param {CollectionEntry<'posts'>[]} posts
+ * @param {PostType} postType
+ * @param {PostTypeOpts} [postTypeOpts]
+ * @param {string} [options.class]
+ */
+
+import type { CollectionEntry } from 'astro:content'
+import type { PostCardWaveOpts } from './post-types/PostCardWave.astro'
+import type { PostSimpleOpts } from './post-types/PostSimple.astro'
+
+import PostCardWave from './post-types/PostCardWave.astro'
+import PostSimple from './post-types/PostSimple.astro'
+
+export type PostType = 'PostSimple' | 'PostCardWave'
+
+export type PostListStyle = 'default' | 'carousel'
+
+export type CommonPostTypeOpts = {
+  fontClass?: string
+  newLabel?: string
+  updatedLabel?: string
+  maxDaysWithin?: number
+  updatedOnLabel?: string
+  addedOnLabel?: string
+}
+
+export type PostTypeOpts = PostCardWaveOpts | PostSimpleOpts
+
+interface Props {
+  listStyle?: PostListStyle
+  posts: CollectionEntry<'posts'>[]
+  postType: PostType
+  postTypeOpts?: PostTypeOpts
+  options?: {
+    class?: string
+  }
+}
+
+const { listStyle, posts, postType, postTypeOpts, options } = Astro.props
+
+export const postListGridClass =
+  'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-4'
+---
+
+<section>
+  {
+    (!listStyle || listStyle === 'default') && (
+      <div class={options?.class || postListGridClass}>
+        {postType === 'PostCardWave' &&
+          posts.map((post, index) => (
+            <PostCardWave post={post} options={{ ...postTypeOpts, colorIndex: index }} />
+          ))}
+        {postType === 'PostSimple' &&
+          posts.map((post) => <PostSimple post={post} options={postTypeOpts} />)}
+      </div>
+    )
+  }
+
+  {listStyle === 'carousel' && <div />}
+</section>

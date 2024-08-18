@@ -30,6 +30,113 @@
   html {
     font-size: 14.5px;
   }
+
+  .m2it-link-hover {
+    @apply text-pink-600;
+  }
+
+  .m2it-link {
+    @apply hover:m2it-link-hover font-normal text-[#015caa] no-underline;
+  }
+
+  .m2it-box-shadow {
+    box-shadow:
+      8px 14px 38px #272c310f,
+      1px 3px 8px #272c3108;
+  }
+
+  .m2it-headings {
+    @apply my-0 font-semibold text-slate-800;
+    @apply bg-gradient-to-r from-blue-200 from-5% via-sky-100 via-30% to-sky-50 to-50%;
+  }
+
+  .m2it-prose-img {
+    @apply my-0;
+  }
+
+  .m2it-blockquote {
+    @apply my-3 border border-y-0 border-l-4 border-r-0 border-slate-500 py-3 font-normal not-italic;
+  }
+
+  .m2it-li {
+    @apply my-1.5;
+  }
+
+  .m2it-list {
+    @apply my-0 pl-[1.8rem];
+  }
+
+  .m2it-td {
+    @apply px-[10px] py-[5px];
+  }
+
+  .m2it-code {
+    @apply break-words rounded-md bg-gray-100 p-[1px_4px_2px_4px];
+    @apply font-mono text-[90%] font-normal;
+    @apply before:content-[''] after:content-[''];
+  }
+
+  .m2it-strong {
+    @apply font-medium text-gray-800;
+  }
+
+  .m2it-table {
+    @apply my-0;
+  }
+
+  .m2it-prose {
+    @apply prose prose-stone max-w-none leading-normal;
+    @apply prose-a:m2it-link;
+    @apply prose-headings:m2it-headings;
+    @apply prose-img:m2it-prose-img;
+    @apply prose-blockquote:m2it-blockquote;
+    @apply prose-h1:text-[1.55rem];
+    @apply prose-h2:text-[1.45rem];
+    @apply prose-h3:text-[1.35rem];
+    @apply prose-li:m2it-li;
+    @apply prose-ol:m2it-list;
+    @apply prose-ul:m2it-list;
+    @apply prose-td:m2it-td;
+    @apply prose-hr:my-6;
+    @apply prose-figure:my-3;
+    @apply prose-strong:m2it-strong;
+    @apply prose-table:m2it-table;
+  }
+
+  .m2it-scrollbar {
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #ced4da;
+      border-radius: 10px;
+      &:hover {
+        background: #adb5bd;
+      }
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &.m2it-scrollbar-small {
+      &::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 7px;
+      }
+    }
+  }
+
+  /* Hide webkit search cancel button */
+  .m2it-hide-wscb {
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      display: none;
+    }
+  }
 }
 
 @layer components {

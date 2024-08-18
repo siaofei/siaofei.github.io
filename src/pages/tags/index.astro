@@ -1,0 +1,96 @@
+---
+/**
+ * Topics Home Page
+ *
+ * This page displays all the tags (topics) associated with the articles.
+ * It provides a grid layout of tags, each linking to a page displaying
+ * associated content. The page is wrapped in a `BaseLayout` for consistent
+ * design across the site.
+ *
+ * Main Features:
+ * - Fetches all tags (topics) using `getCollection` from the content source.
+ * - Displays a header with the title "标签" (Tags) and the number of topics.
+ * - If no tags are available, shows a message indicating that no tags exist.
+ * - Tags are displayed in a grid, each tag linking to its respective page.
+ * - Icons are displayed with tags if available, using the `SimpleImage`
+ *   component.
+ *
+ * Key Variables:
+ * - `title`: The title of the page, set to "标签" (Tags).
+ * - `description`: A brief description of the page's purpose.
+ * - `metadata`: Contains the title and description for SEO purposes.
+ * - `topics`: Collection of all tags (topics) fetched from the content source.
+ * - `tagListContainerClass`: CSS classes for the grid layout of tags.
+ *
+ * The layout includes a header, a container for the tags, and a footer.
+ */
+
+import { getCollection } from 'astro:content'
+import { generateIconUri, getUri, makeSlugText } from '@utils/helpers'
+import { bodyPadding, containerWide } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import HeaderPage from '@components/header/HeaderPage.astro'
+import SimpleImage from '@components/widgets/SimpleImage.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+const title = '话题'
+const description = '我写的一些文章主题。'
+
+const metadata = {
+  title,
+  description,
+}
+
+const tags = await getCollection('topics')
+
+const tagListContainerClass =
+  'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-hidden w-full'
+---
+
+<BaseLayout metadata={metadata}>
+  <div class="thi-bg-stone flex flex-col">
+    <HeaderPage
+      headerType="gray"
+      headerWidth="wide"
+      title={title}
+      subtitle={description}
+      icon={{ sourceUrl: '/topics.svg' }}
+      iconClass="h-12 w-12"
+      number={tags.length}
+    />
+    <Container class:list={['shrink-0 grow basis-auto', bodyPadding, containerWide]}>
+      {tags.length === 0 && <div class="my-4 text-xl font-bold">暂时还没有任何话题！</div>}
+      {
+        tags.length > 0 && (
+          <div class={tagListContainerClass}>
+            {tags.map((tag) => (
+              <a
+                href={getUri('tag', makeSlugText(tag.id))}
+                class:list={[
+                  'thi-box-code flex items-center gap-2 p-4 transition duration-200 ease-in-out hover:-translate-y-0.5',
+                  { 'tooltip-auto': tag.data.description },
+                ]}
+                data-title={tag.data.description}
+              >
+                {tag.data.icon && (
+                  <div>
+                    <SimpleImage
+                      src={generateIconUri(tag.data.icon)}
+                      alt={tag.data.name}
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                )}
+                <div>{tag.data.longName || tag.data.name}</div>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </Container>
+    <Footer footerType="gray" />
+  </div>
+</BaseLayout>

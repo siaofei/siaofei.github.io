@@ -1,0 +1,104 @@
+---
+/**
+ * Notes Home Page
+ *
+ * This page serves as the home for all notes, displaying pinned notes, blog
+ * posts, and a table of contents for easy navigation. It uses multiple
+ * components to build the layout and content, including a header, a list of
+ * notes, a table of contents for the notes, and a footer.
+ *
+ * Main features include:
+ * - Fetching and displaying blog posts and notes from the content collection.
+ * - Sorting notes by date in descending order (most recent first).
+ * - Filtering and displaying pinned tags associated with at least one note
+ *   post.
+ * - Organizing the layout using components like `HeaderPage`, `Container`,
+ *   `NotesPageList`, `NotesToc`, `Footer`, and `ScrollToTop`.
+ *
+ * Metadata for the page is also defined to improve SEO and provide relevant
+ * information about the page content.
+ *
+ * Key Variables:
+ * - `title`: The title of the page, set to "笔记" (Notes).
+ * - `description`: A brief description of the page's purpose.
+ * - `metadata`: Contains the title and description, used for SEO.
+ * - `blogPosts`: Collection of all blog posts of type 'blog'.
+ * - `pinnedPosts`: Collection of all pinned notes.
+ * - `posts`: Collection of all notes, sorted by date in descending order.
+ * - `pinnedTagsSorted`: Array of pinned tags that have at least one related
+ *   note post, with special handling for the "Others" tag.
+ * - `numBlogPosts`: Limits the number of blog posts displayed to 6.
+ *
+ * The page layout is wrapped in a `BaseLayout` component, ensuring consistency
+ * across the site.
+ */
+
+import { getEntries } from 'astro:content'
+import { getFilteredPosts } from '@utils/getFilteredPosts'
+import { bodyPadding, containerWide } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import HeaderPage from '@components/header/HeaderPage.astro'
+import NotesPageList from '@components/NotesPageList.astro'
+import NotesToc from '@components/NotesToc.astro'
+import ScrollToTop from '@components/widgets/ScrollToTop.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+const title = '笔记'
+const description = '好记性不如烂笔头。'
+
+const metadata = {
+  title: title,
+  description: description,
+}
+
+/* all blog posts */
+const blogPosts = await getFilteredPosts({ type: 'blog' })
+
+/* all pinned notes */
+const pinnedPosts = await getFilteredPosts({ type: 'note', pinned: true, match: 'and' })
+
+/* all note posts */
+const posts = await getFilteredPosts({ type: 'note' })
+
+/* All pinned tags that have at least one related note post. */
+const tags = await Promise.all(posts.map(async (post) => await getEntries(post.data.tags)))
+const pinnedTags = [...new Set(tags.flat())].filter((tag) => tag.data.pinned === true)
+const others = pinnedTags.find((tag) => tag.data.name === 'Others')
+const pinnedTagsSorted = pinnedTags.filter((tag) => tag.data.name != 'Others')
+if (others) pinnedTagsSorted.push(others)
+
+const numBlogPosts = 6
+---
+
+<BaseLayout metadata={metadata}>
+  <div class="thi-bg-stone flex flex-col">
+    <HeaderPage
+      title={title}
+      subtitle={description}
+      headerType="gray"
+      headerWidth="wide"
+      icon={{ sourceUrl: '/notes.svg' }}
+      iconClass="h-12 w-12"
+    />
+    <Container class:list={[bodyPadding, containerWide]}>
+      <div class="flex flex-col gap-8 md:flex-row">
+        <NotesPageList
+          blogPosts={blogPosts}
+          pinnedPosts={pinnedPosts}
+          posts={posts}
+          pinnedTags={pinnedTagsSorted}
+          numBlogPosts={numBlogPosts}
+        />
+
+        <NotesToc
+          class="top-[70px] order-1 h-fit w-full md:sticky md:order-2 md:w-fit"
+          tags={pinnedTagsSorted}
+        />
+      </div>
+    </Container>
+    <Footer footerType="gray" />
+    <ScrollToTop />
+  </div>
+</BaseLayout>

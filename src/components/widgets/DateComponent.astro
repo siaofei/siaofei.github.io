@@ -2,29 +2,30 @@
 /**
  * Date Component
  *
- * @description Format a date string that conform to ISO 8501 format.
+ * @description Formats a date string according to ISO 8601 and various options.
  * @see https://en.wikipedia.org/wiki/ISO_8601
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
+ * @see @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
  *
- * @param {string} dateString - Transfer this into Date object and dayjs.
- * @param {boolean} [onlyLabel] - If it not exists or false, only print {@link dateLabel}.
- * @param {boolean} [humanize] - If it not exists or false, use {@link format} format {@link dateString}.
- * @param {string} [format='dd/MM/yyy'] - Format {@link dateString} by {@link https://day.js.org/docs/en/display/format}[dayjs].
- * @param {Object} [humanizeOpts] - Work only {@link humanize}} is true.
- * @param {string} [humanizeOpts.today] - If it not exists, default is 'today'. Eg: '今天'.
- * @param {string} [humanizeOpts.yesterday] - If it not exists, default is 'yesterday'. Eg: '昨天'.
- * @param {string} [humanizeOpts.daysAgo] - Eg: If it not exists, default is 'days ago'. '天前'.
- * @param {string} [humanizeOpts.weeksAgo] - If it not exists, default is 'weeks ago'. Eg: '周前'.
- * @param {string} [humanizeOpts.monthAgo] - If it not exists, default is 'months ago'. Eg: '月前'.
- * @param {string} [class] - Date Component container class properties.
+ * @param {string} dateString - The ISO 8601 date string to format. Used in `Date` and `dayjs`.
+ * @param {string} [dateLabel] - A label to prefix the formatted date (e.g., "Updated at:").
+ * @param {boolean} [humanize] - If true, display a relative time (e.g., "today").
+ * @param {boolean} [onlyLabel] - If true, only the label is displayed without the date.
+ * @param {string} [format='DD/MM/YYYY'] - The format for displaying the date using dayjs.
+ * @param {Object} [humanizeOpts] - Options for customizing humanized output.
+ * @param {string} [humanizeOpts.today='today'] - Text for today's date.
+ * @param {string} [humanizeOpts.yesterday='yesterday'] - Text for yesterday's date.
+ * @param {string} [humanizeOpts.daysAgo='days ago'] - Text for days ago.
+ * @param {string} [humanizeOpts.weeksAgo='weeks ago'] - Text for weeks ago.
+ * @param {string} [humanizeOpts.monthsAgo='months ago'] - Text for months ago.
+ * @param {string} [class] - Additional CSS classes for the container.
  *
  * @example
- * // display humanized date: today
+ * // Display humanized date: "today"
  * <DateComponent dateString={new Date().toISOString()} humanize={true} />
  *
  * @example
- * // display format date: May/24/7
- * <DateComponent dateString="2024-05-07" format={'MMM/yy/d'}
+ * // Display formatted date: "May/24/7"
+ * <DateComponent dateString="2024-05-07" format={'MMM/YY/D'} />
  */
 
 interface Props {

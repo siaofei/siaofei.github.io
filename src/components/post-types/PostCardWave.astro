@@ -1,0 +1,302 @@
+---
+/**
+ * Post Card Wave Template
+ *
+ * Post Card Wave Template for blog in Blogs & Notes page
+ *
+ * @param {CollectionEntry<'posts'>} post - The blog post entry from the collection.
+ * @param {PostCardWaveOpts} [options] - Optional configuration for the post card
+ * wave template, all options are valid in `CommonPostTypeOpts`.
+ * @param {number} [options.colorIndex] - The index of the color to be used.
+ * @param {boolean} [humanizeDate] - Whether to display the date in a human-readable format.
+ */
+
+import type { CommonPostTypeOpts } from '@components/PostList.astro'
+import type { CollectionEntry } from 'astro:content'
+
+import { getUri } from '@utils/helpers'
+
+import DateComponent from '@components/widgets/DateComponent.astro'
+
+export type PostCardWaveOpts = CommonPostTypeOpts & {
+  colorIndex?: number
+  humanizeDate?: boolean
+}
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  options?: PostCardWaveOpts
+}
+
+const { post, options } = Astro.props
+
+const waveColors = [
+  '0, 0, 255',
+  '255, 0, 166',
+  '0, 0, 0',
+  '166, 82, 0',
+  '0, 120, 0',
+  '166, 0, 82',
+  '166, 0, 255',
+  '0, 139, 139',
+  '0, 255, 255',
+  '0, 255, 166',
+  '166, 255, 0',
+]
+
+const getColorIndex = (index?: number) => {
+  return (index || 0) % waveColors.length
+}
+---
+
+<a
+  href={getUri('note', post.slug) || '/'}
+  x-data="usePostDateStatus"
+  data-created-date={post.data.createdDate}
+  date-modified-date={post.data?.date}
+  date-within-days={options?.maxDaysWithin || 7}
+>
+  <div class="post-card-wave group gap-2">
+    <span
+      class:list={[
+        options?.fontClass,
+        'card-title group-hover:m2it-link-hover text-slate-800',
+        'text-[0.95rem] leading-[1.35]',
+      ]}
+    >
+      {post.data.title}
+    </span>
+    {
+      (post.data.createdDate || post.data.date) && (
+        <div class="items-center gap-2">
+          {post.data.date && (
+            <div
+              class:list={[
+                'items-center gap-1 whitespace-nowrap rounded-md px-3 py-0.5 text-[0.7rem]',
+              ]}
+              x-bind:class="{
+                  'bg-slate-200 text-slate-800': status === 'updated',
+                  'bg-green-200 text-green-900': status === 'updatedWithin',
+                  'hidden md:flex': status !== 'updatedWithin',
+                }"
+              x-show="['updated', 'updatedWithin'].includes(status)"
+              x-cloak
+            >
+              <DateComponent
+                dateString={post.data.date}
+                format="MMM DD, YYYY"
+                humanize={options?.humanizeDate}
+                dateLabel={options?.updatedOnLabel || 'updated'}
+              />
+            </div>
+          )}
+
+          <div
+            class="whitespace-nowrap rounded-md bg-amber-200 px-3 py-0.5 text-[0.7rem] text-amber-900"
+            x-show="status === 'new'"
+            x-cloak
+          >
+            {options?.newLabel || 'new'}
+          </div>
+        </div>
+      )
+    }
+    <div class="bottom-wave">
+      <svg
+        class="waves"
+        preserveAspectRatio="none"
+        shape-rendering="auto"
+        viewBox="0 24 150 28"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+      >
+        <defs>
+          <path
+            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
+            id="gentle-wave"></path>
+        </defs>
+        <g class="parallax">
+          <use
+            fill={`rgba(${waveColors[getColorIndex(options?.colorIndex)]}, 0.1)`}
+            x="48"
+            xlink:href="#gentle-wave"
+            y="0"></use>
+          <use
+            fill={`rgba(${waveColors[getColorIndex(options?.colorIndex)]}, 0.05)`}
+            x="48"
+            xlink:href="#gentle-wave"
+            y="3"></use>
+          <use
+            fill={`rgba(${waveColors[getColorIndex(options?.colorIndex)]}, 0.01)`}
+            x="48"
+            xlink:href="#gentle-wave"
+            y="5"></use>
+          <use
+            fill={`rgba(${waveColors[getColorIndex(options?.colorIndex)]}, 0.005)`}
+            x="48"
+            xlink:href="#gentle-wave"
+            y="7"></use>
+        </g>
+      </svg>
+    </div>
+  </div>
+</a>
+
+<style>
+  .post-card-wave {
+    background: #fff;
+    box-shadow:
+      8px 14px 38px #272c310f,
+      1px 3px 8px #272c3108;
+    height: 100%;
+    min-height: 8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    .post-card-wave {
+      background: #fff;
+      box-shadow:
+        8px 14px 38px #272c310f,
+        1px 3px 8px #272c3108;
+      height: 100%;
+      min-height: 8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      border-radius: 12px;
+      transition: all 0.3s ease-in-out;
+      position: relative;
+      overflow: hidden;
+
+      .bottom-wave {
+        position: absolute;
+        bottom: -2px;
+        width: 100%;
+
+        .waves {
+          position: relative;
+          width: 100%;
+          height: 5vh;
+          margin-bottom: -7px; /*Fix for safari gap*/
+          min-height: 60px;
+          max-height: 150px;
+
+          .parallax > use {
+            animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+          }
+          .parallax > use:nth-child(1) {
+            animation-delay: -2s;
+            animation-duration: 10s;
+          }
+          .parallax > use:nth-child(2) {
+            animation-delay: -5s;
+            animation-duration: 10s;
+          }
+          .parallax > use:nth-child(3) {
+            animation-delay: -7s;
+            animation-duration: 10s;
+          }
+          .parallax > use:nth-child(4) {
+            animation-delay: -1s;
+            animation-duration: 10s;
+          }
+        }
+      }
+    }
+
+    @keyframes move-forever {
+      0% {
+        transform: translate3d(-90px, 0, 0);
+      }
+      100% {
+        transform: translate3d(85px, 0, 0);
+      }
+    }
+
+    .saphire-blue {
+      background: #0067a5;
+      background: linear-gradient(to bottom, #0067a5 0%, #005896 100%);
+      background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0%, #0067a5),
+        color-stop(100%, #005896)
+      );
+      background: -webkit-linear-gradient(top, #0067a5 0%, #005896 100%);
+      background: -moz-linear-gradient(top, #0067a5 0%, #005896 100%);
+      background: -o-linear-gradient(top, #0067a5 0%, #005896 100%);
+      background: -ms-linear-gradient(top, #0067a5 0%, #005896 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0067A5', endColorstr='#005896', GradientType=0);
+      border: 1px solid #004987;
+      box-shadow: inset 0 1px 0 #0f76b4;
+      -webkit-box-shadow: inset 0 1px 0 #0f76b4;
+      -moz-box-shadow: inset 0 1px 0 #0f76b4;
+
+      h1,
+      .xem-them {
+        color: #fff;
+      }
+
+      .xem-them:hover {
+        color: #ffe200;
+      }
+    }
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+
+    .bottom-wave {
+      position: absolute;
+      bottom: -2px;
+      width: 100%;
+
+      .waves {
+        position: relative;
+        width: 100%;
+        height: 5vh;
+        margin-bottom: -7px; /*Fix for safari gap*/
+        min-height: 60px;
+        max-height: 150px;
+
+        .parallax > use {
+          animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+        }
+        .parallax > use:nth-child(1) {
+          animation-delay: -2s;
+          animation-duration: 10s;
+        }
+        .parallax > use:nth-child(2) {
+          animation-delay: -5s;
+          animation-duration: 10s;
+        }
+        .parallax > use:nth-child(3) {
+          animation-delay: -7s;
+          animation-duration: 10s;
+        }
+        .parallax > use:nth-child(4) {
+          animation-delay: -1s;
+          animation-duration: 10s;
+        }
+      }
+    }
+  }
+
+  @keyframes move-forever {
+    0% {
+      transform: translate3d(-90px, 0, 0);
+    }
+    100% {
+      transform: translate3d(85px, 0, 0);
+    }
+  }
+</style>
+
+<script src="../../scripts/usePostDateStatus.ts"></script>

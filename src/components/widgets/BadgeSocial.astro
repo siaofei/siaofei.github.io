@@ -1,0 +1,40 @@
+---
+/**
+ * Icon Link Component
+ *
+ * @description Renders a link with an icon. The icon can be customized with
+ * additional CSS classes. The link opens in a new tab.
+ *
+ * @param {string} iconUrl - The URL of the icon image.
+ * @param {string} url - The destination URL for the link.
+ * @param {string} title - The title of the link, used for tooltip and alt text.
+ * @param {string} [imgClass] - Optional additional CSS classes for the image.
+ */
+
+import ImageComponent from './ImageComponent.astro'
+
+interface Props {
+  iconUrl: string
+  url: string
+  title: string
+  imgClass?: string
+}
+
+const { iconUrl, url, title, imgClass } = Astro.props
+---
+
+<a
+  class={`tooltip-auto group block h-12 w-12 rounded-2xl bg-gray-700 p-2 shadow-none md:h-10 md:w-10 md:p-1.5`}
+  href={url}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-title={title}
+>
+  <ImageComponent
+    image={{ sourceUrl: iconUrl, altText: title, width: 64, height: 64 }}
+    class:list={[
+      'h-16 w-16 rounded-full transition-transform duration-200 group-hover:-translate-y-0.5',
+      imgClass,
+    ]}
+  />
+</a>

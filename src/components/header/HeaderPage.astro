@@ -1,17 +1,19 @@
 ---
 /**
- * Header Page Components
+ * Header Page Component
  *
- * Used in nav item page header.
+ * This component is used in the navigation item page header.
  *
- * @param {('white'|'gray')} [headerType]
- * @param {('wide'|'normal')} [headerWidth]
- * @param {string} title
- * @param {string} [subtitle]
- * @param {string} [slotContainerClass]
+ * @param {('white'|'gray')} [headerType='white'] - The background color type for the header.
+ * @param {('wide'|'normal')} [headerWidth] - The width of the header. 'Wide' spans the full
+ * width, while 'normal' is standard width.
+ * @param {string} title - The main title text to be displayed in the header.
+ * @param {string} [subtitle] - An optional subtitle text to be displayed under the title.
+ * @param {string} [slotContainerClass] - Optional CSS classes for customizing the slot container.
  * @param {ImageType} [icon] - If icon sourceUrl else imageMetadata
- * @param {string} [iconClass]
- * @param {number} [number]
+ * @param {string} [iconClass] -  Optional CSS classes for customizing the icon's appearance.
+ * @param {number} [number] - An optional number to be displayed next to the title,
+ * typically used for ordering or counting.
  */
 
 import type { ImageType } from '@/types'

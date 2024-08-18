@@ -1,15 +1,26 @@
 ---
 /**
- * Base Layout
+ * Base Layout Component
  *
- * @param {Metadata} metadata
- * @param {string} metadata.title
- * @param {string} [metadata.description]
+ * This is the base layout component for the website, providing the basic
+ * structure and metadata configuration for each page. It receives `metadata`
+ * as a prop to set the page title and description.
+ *
+ * @param {Metadata} metadata - The metadata for the page, used to configure
+ * the page title and description.
+ * @param {string} metadata.title - The title of the page, displayed in the
+ * browser tab.
+ * @param {string} [metadata.description] - Optional description of the page,
+ * displayed in the <meta> tag. If not provided, a default quote from the `me`
+ * data file is used.
  */
 
+import { ViewTransitions } from 'astro:transitions'
 import me from '@data/me'
 
 import Nav from '@components/nav/Nav.astro'
+
+import '@styles/base.css'
 
 export type Metadata = {
   title: string
@@ -31,11 +42,12 @@ const { metadata } = Astro.props
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={metadata.description || me.quote} />
     <title>{`${metadata.title} | 刘晓飞的个人网站`}</title>
+    <ViewTransitions />
   </head>
   <body>
     <div class="flex min-h-screen flex-col justify-between">
       <Nav />
-      <main class="mb-auto"><slot /></main>
+      <main class="mb-auto" transition:animate="fade"><slot /></main>
     </div>
   </body>
 </html>

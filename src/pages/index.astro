@@ -1,12 +1,19 @@
 ---
+/**
+ * Home Page
+ */
+
 import type { Metadata } from '@layouts/BaseLayout.astro'
 
 import me from '@data/me'
-import { bodyPadding, containerWide } from '@/consts'
+import { getFilteredPosts } from '@utils/getFilteredPosts'
+import { bodyPadding, containerWide, defaultPostTypeOpts } from '@/consts'
 
 import Container from '@components/Container.astro'
 import Footer from '@components/Footer.astro'
 import HeaderIndex from '@components/header/HeaderIndex.astro'
+import HeadingWithMore from '@components/HeadingWithMore.astro'
+import PostList from '@components/PostList.astro'
 import ScrollToTop from '@components/widgets/ScrollToTop.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
 
@@ -16,13 +23,87 @@ const metadata: Metadata = {
   title: '嘿！我是刘晓飞',
   description: me.quote,
 }
+
+/**
+ * Note:
+ */
+const recentBlogPostsTitle = 'Recent blog posts'
+const recentUpdatedNotesTitle = 'Recently updated notes'
+
+const numBlogPosts = 4
+const numPinnedPosts = 6
+const numPosts = 10
+
+const pinnedPosts = await getFilteredPosts({ type: 'note', pinned: true }, numPinnedPosts)
+const blogPosts = await getFilteredPosts({ type: 'blog' }, numBlogPosts)
+const posts = await getFilteredPosts({ type: 'note' }, numPosts)
 ---
 
 <BaseLayout metadata={metadata}>
   <div class="thi-bg-stone">
     <HeaderIndex />
     <Container class:list={[bodyPadding, containerWide]}>
-      <!-- Home page content -->
+      <div class="flex flex-col gap-14">
+        {/* Blog */}
+        {
+          blogPosts.length > 0 && (
+            <div class="flex flex-col gap-4">
+              <HeadingWithMore
+                title={recentBlogPostsTitle}
+                href={blogPosts.length >= numBlogPosts ? '/blogs/' : undefined}
+              />
+              <div class="overflow-hidden">
+                <PostList
+                  posts={blogPosts}
+                  postType="PostCardWave"
+                  postTypeOpts={defaultPostTypeOpts}
+                  options={{
+                    class: 'grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-4',
+                  }}
+                />
+              </div>
+            </div>
+          )
+        }
+
+        {/* Notes */}
+        <div class="flex flex-col gap-4">
+          <HeadingWithMore
+            title={recentUpdatedNotesTitle}
+            href={posts.length >= numPosts ? '/notes/' : undefined}
+          />
+
+          <div class="flex flex-col gap-2">
+            {/* pinned */}
+            <div class="thi-box-code mb-3 overflow-hidden">
+              <PostList
+                posts={pinnedPosts}
+                postType="PostSimple"
+                postTypeOpts={{ ...defaultPostTypeOpts, showPinned: true }}
+                options={{
+                  class: 'flex flex-col divide-y',
+                }}
+              />
+            </div>
+
+            {/* notes */}
+            <div class="thi-box-code overflow-hidden">
+              <PostList
+                posts={posts.filter((post) => !post.data.pinned)}
+                postType="PostSimple"
+                postTypeOpts={defaultPostTypeOpts}
+                options={{
+                  class: 'flex flex-col divide-y',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Bookmarks */}
+
+        {/* Tools */}
+      </div>
     </Container>
     <Footer footerType="gray" />
     <ScrollToTop />

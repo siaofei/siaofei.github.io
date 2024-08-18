@@ -1,0 +1,77 @@
+---
+/**
+ * Blogs Home Page
+ *
+ * This page displays all blog posts available in the collection. It uses
+ * several components to structure the layout, including a header, a list
+ * of posts, and a footer.
+ *
+ * Main Features:
+ * - Fetches all blog posts from the content collection.
+ * - Displays a header with the title "博客" (Blogs) and a subtitle
+ *   describing the blog's purpose.
+ * - If there are no blog posts, it shows a message indicating that no
+ *   posts are available yet.
+ * - If there are blog posts, it displays them in a grid format using the
+ *   `PostList` component.
+ *
+ * Key Variables:
+ * - `metadata`: Contains the title and description of the page, used for
+ *   SEO and display purposes.
+ * - `blogPosts`: An array of all blog posts fetched from the content
+ *   collection.
+ *
+ * The page layout is wrapped in a `BaseLayout` component, ensuring
+ * consistency across the site. The design emphasizes a clean, modern look,
+ * with a flexible grid layout for displaying the posts.
+ */
+
+import { getFilteredPosts } from '@utils/getFilteredPosts'
+import { bodyPadding, containerWide, defaultPostTypeOpts } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import HeaderPage from '@components/header/HeaderPage.astro'
+import PostList from '@components/PostList.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+const metadata = {
+  description: '这是我写的一系列博客文章，不是个人笔记，而是专门为你——读者而写。',
+  title: '博客',
+}
+
+const blogPosts = await getFilteredPosts({ type: 'blog' })
+---
+
+<BaseLayout metadata={metadata}>
+  <div class="thi-bg-stone">
+    <HeaderPage
+      headerType="gray"
+      headerWidth="wide"
+      title={metadata.title}
+      subtitle={metadata.description}
+      icon={{ sourceUrl: '/blogs.svg' }}
+    />
+    <Container class:list={[bodyPadding, containerWide]}>
+      {blogPosts.length === 0 && <div class="my-4 text-xl">🥺暂时还没有博客，敬请期待！</div>}
+      {
+        blogPosts.length > 0 && (
+          <div class="flex flex-col gap-8">
+            <div class="overflow-hidden">
+              <PostList
+                posts={blogPosts}
+                postType="PostCardWave"
+                postTypeOpts={defaultPostTypeOpts}
+                options={{
+                  class:
+                    'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-4',
+                }}
+              />
+            </div>
+          </div>
+        )
+      }
+    </Container>
+    <Footer footerType="gray" />
+  </div>
+</BaseLayout>

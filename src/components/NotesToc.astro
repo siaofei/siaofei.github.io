@@ -1,0 +1,109 @@
+---
+/**
+ * Notes Toc
+ *
+ * This component renders a table of contents (ToC) for notes, based on provided tags.
+ * It also includes links to blog posts, pinned notes, and recently updated notes sections.
+ *
+ * @param {CollectionEntry<'topics'>[]} tags - Array of tags for generating the ToC.
+ * @param {string} [class] - Optional additional CSS classes for styling the ToC.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { makeSlugText } from '@utils/helpers'
+
+import { blogPostsTitle, pinnedNotesTitle, recentUpdatedNotesTitle } from './NotesPageList.astro'
+
+interface Props {
+  tags: CollectionEntry<'topics'>[]
+  class?: string
+}
+
+const { tags, class: className } = Astro.props
+---
+
+<div class={className}>
+  <div
+    class="thi-box-code flex flex-col divide-y p-4 md:border-none md:bg-transparent md:shadow-none"
+  >
+    <div class="px-2 pb-1.5 font-heading text-lg font-semibold text-slate-800">目录</div>
+    <div
+      class:list={[
+        'm2it-scrollbar m2it-scrollbar-small grid grid-cols-2 overflow-auto pt-2 text-[0.88rem] md:grid-cols-1',
+      ]}
+    >
+      <a
+        id={`toc-${makeSlugText(blogPostsTitle)}`}
+        href={`#${makeSlugText(blogPostsTitle)}`}
+        class:list={['hover:m2it-link group flex items-center gap-2 rounded-lg px-2 py-1']}
+      >
+        <div class="flex items-center gap-1">{blogPostsTitle}</div>
+      </a>
+      <a
+        id={`toc-${makeSlugText(pinnedNotesTitle)}`}
+        href={`#${makeSlugText(pinnedNotesTitle)}`}
+        class:list={['hover:m2it-link group flex items-center gap-2 rounded-lg px-2 py-1']}
+      >
+        <div class="flex items-center gap-1">{pinnedNotesTitle}</div>
+      </a>
+      <a
+        id={`toc-${makeSlugText(recentUpdatedNotesTitle)}`}
+        href={`#${makeSlugText(recentUpdatedNotesTitle)}`}
+        class:list={['hover:m2it-link group flex items-center gap-2 rounded-lg px-2 py-1']}
+      >
+        <div>{recentUpdatedNotesTitle}</div>
+      </a>
+      {
+        tags.map((tag) => {
+          const anchor = makeSlugText(tag.id)
+          return (
+            <a
+              class:list={['hover:m2it-link group flex items-center gap-2 rounded-lg px-2 py-1']}
+              href={`#${anchor}`}
+            >
+              <div>{tag.data.name}</div>
+            </a>
+          )
+        })
+      }
+      <a class="hover:m2it-link pt-2 text-[0.9rem] italic text-slate-700" href="/tags/">
+        👉 See all topics...
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+      rootMargin: '-100px 0% -80% 0px',
+    }
+
+    let activeId = ''
+    const handleObserver = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        // corresponding toc item
+        const tocItem = document.querySelector(`#toc-${entry.target.id}`)
+
+        if (entry?.isIntersecting) {
+          if (activeId && entry.target.id !== activeId) {
+            // remove previous tocItem effect
+            document
+              .querySelector(`#toc-${activeId}`)
+              ?.classList.remove('bg-slate-200', 'text-slate-900')
+          }
+          tocItem?.classList.replace('text-slate-600', 'text-slate-900')
+          tocItem?.classList.add('bg-slate-200')
+          activeId = entry.target.id
+        } else if (entry.target.id === activeId) {
+          tocItem?.classList.remove('bg-slate-200')
+          tocItem?.classList.add('text-slate-600')
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(handleObserver, observerOptions)
+    document.querySelectorAll('h2').forEach((elem) => observer.observe(elem))
+  })
+</script>

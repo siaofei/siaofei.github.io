@@ -1,0 +1,97 @@
+---
+/**
+ * Notes Page List
+ *
+ * This component renders sections for blog posts, pinned notes, and recently
+ * updated notes, as well as topic sections for pinned tags. Each section is
+ * only displayed if there are relevant posts or tags available.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { Icon } from 'astro-icon/components'
+import { defaultPostTypeOpts } from '@/consts'
+
+import HeadingWithMore from './HeadingWithMore.astro'
+import NoteTopicSection from './NoteTopicSection.astro'
+import PostList from './PostList.astro'
+
+export const blogPostsTitle = 'Blog posts'
+export const pinnedNotesTitle = 'Pinned notes posts'
+export const recentUpdatedNotesTitle = 'Recently updated notes'
+
+interface Props {
+  blogPosts: CollectionEntry<'posts'>[]
+  pinnedPosts: CollectionEntry<'posts'>[]
+  posts: CollectionEntry<'posts'>[]
+  pinnedTags: CollectionEntry<'topics'>[]
+  numBlogPosts: number
+}
+
+const { blogPosts, pinnedPosts, posts, pinnedTags, numBlogPosts } = Astro.props
+---
+
+<div class="order-2 flex flex-1 flex-col gap-12">
+  {/* Blog posts */}
+  {
+    blogPosts.length > 0 && (
+      <div class="flex flex-col gap-2">
+        <HeadingWithMore
+          title={blogPostsTitle}
+          href={blogPosts.length >= numBlogPosts ? '/blogs/' : undefined}
+          class="scroll-mt-[70px]"
+          icon={true}
+        >
+          <Icon name="widgets/BlogIcon" class="h-6 w-6" />
+        </HeadingWithMore>
+
+        <div class="overflow-hidden">
+          <PostList
+            posts={blogPosts}
+            postType="PostCardWave"
+            postTypeOpts={defaultPostTypeOpts}
+            options={{
+              class: 'grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8 sm:gap-x-4',
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  {/* Pinned note posts */}
+  {
+    pinnedPosts.length > 0 && (
+      <div class="flex flex-col gap-2">
+        <HeadingWithMore title={pinnedNotesTitle} class="scroll-mt-[70px]" />
+        <div class="thi-box-code overflow-hidden">
+          <PostList
+            posts={pinnedPosts}
+            postType="PostSimple"
+            postTypeOpts={{ ...defaultPostTypeOpts, showPinned: true }}
+            options={{
+              class: 'flex flex-col divide-y',
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  {/* Recently updated notes */}
+  <div class="flex flex-col gap-2">
+    <HeadingWithMore title={recentUpdatedNotesTitle} class="scroll-mt-[70px]" />
+    <div class="thi-box-code overflow-hidden">
+      <PostList
+        posts={posts.filter((post) => !post.data.pinned)}
+        postType="PostSimple"
+        postTypeOpts={defaultPostTypeOpts}
+        options={{
+          class: 'flex flex-col divide-y',
+        }}
+      />
+    </div>
+  </div>
+
+  {pinnedTags.map((tag) => <NoteTopicSection tag={tag} />)}
+</div>

@@ -1,0 +1,104 @@
+---
+/**
+ * Note Page
+ *
+ * @todo Style markdown content.
+ *
+ * This page template is used to display individual note posts. It features a
+ * structured layout with headers, content, and sidebars for additional
+ * information or navigation.
+ *
+ * Main Features:
+ * - Generates static paths for all notes using `getStaticPaths`, ensuring each
+ *   note has its own unique URL based on the slug.
+ * - Fetches and renders the content of the note post dynamically.
+ * - Displays a header section with the note's title and metadata.
+ * - Incorporates sidebars (`PostAside`) on both sides of the main content,
+ *   which can be customized or extended for additional functionality.
+ * - The content is styled using `prose` classes for a clean and readable
+ *   format.
+ * - The layout is wrapped in a `BaseLayout` component, ensuring consistent
+ *   design across the site.
+ *
+ * Key Variables:
+ * - `metadata`: Contains the title and description of the note post, used for
+ *   SEO and page display purposes.
+ * - `Content`: The rendered content of the note, which is dynamically loaded
+ *   and displayed.
+ * - `asideClass`: Defines the styling and behavior of the sidebars, including
+ *   their visibility and positioning.
+ *
+ * The page also includes additional components like `ScrollToTop` for enhanced
+ * user experience and `Footer` to maintain a cohesive site layout.
+ */
+
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import { getCollection } from 'astro:content'
+import { bodyPadding, containerNormal } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import PostAside from '@components/PostAside.astro'
+import PostHeader from '@components/PostHeader.astro'
+import ScrollToTop from '@components/widgets/ScrollToTop.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('posts')
+
+  return posts.map((post) => {
+    return {
+      params: { slug: post.slug },
+      props: { post },
+    }
+  })
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { post } = Astro.props
+
+const { Content } = await post.render()
+
+const metadata = {
+  title: post.data.title,
+  description: post.data?.description,
+}
+
+const asideClass = ['hidden 2xl:block flex-1', 'h-[calc(100vh-130px)] sticky top-[70px] pt-8']
+---
+
+<BaseLayout metadata={metadata}>
+  <div class="animate-fadeIn">
+    <PostHeader post={post} />
+
+    <div class:list={['flex justify-center', bodyPadding]}>
+      <aside class:list={[asideClass]}>
+        <PostAside position="left">
+          <div class="hidden">Left aside</div>
+        </PostAside>
+      </aside>
+
+      <Container class={containerNormal}>
+        <article
+          class:list={[
+            'm2it-prose dark:prose-invert',
+            'sm:prose-sm md:prose-lg lg:prose-xl',
+            'prose-headings:scroll-mt-[70px]',
+          ]}
+        >
+          {/* Content Body */}
+          <Content />
+        </article>
+        <!-- <Comments /> -->
+      </Container>
+
+      <aside class:list={[asideClass]}>
+        <PostAside position="right" />
+      </aside>
+    </div>
+    <Footer footerType="white" />
+    <ScrollToTop />
+  </div>
+</BaseLayout>

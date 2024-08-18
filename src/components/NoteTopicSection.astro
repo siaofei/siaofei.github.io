@@ -1,0 +1,77 @@
+---
+/**
+ * Note Topic Section
+ *
+ * This module is responsible for fetching and displaying a list of notes
+ * related to a specific tag.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { getFilteredPosts } from '@utils/getFilteredPosts'
+import { generateIconUri, getUri, makeSlugText } from '@utils/helpers'
+import { defaultPostTypeOpts } from '@/consts'
+
+import PostList from './PostList.astro'
+import ImageComponent from './widgets/ImageComponent.astro'
+
+interface Props {
+  tag: CollectionEntry<'topics'>
+  fontClass?: string
+}
+
+const { tag, fontClass } = Astro.props
+
+const numToDisplay = 8
+
+const notes = await getFilteredPosts(
+  { type: 'note', tags: { multi_select: [tag.id] } },
+  numToDisplay,
+)
+---
+
+{
+  notes.length > 0 && (
+    <div class="group flex flex-col gap-3">
+      <div class="flex items-center gap-2">
+        <div>
+          <ImageComponent
+            image={{ sourceUrl: generateIconUri(tag.data.icon), width: 40, height: 40 }}
+            alt="Heading icon"
+          />
+        </div>
+        <h2
+          id={makeSlugText(tag.id)}
+          class="scroll-mt-[70px] font-heading text-2xl font-semibold text-slate-700"
+        >
+          <span>
+            {tag.data?.longName || tag.data.name}
+            {tag.data?.longName && <>({tag.data.name})</>}
+          </span>
+          {notes.length >= numToDisplay && (
+            <a
+              class:list={[
+                fontClass,
+                'hover:m2it-link-hover ml-2 text-[70%] font-normal italic text-slate-600',
+              ]}
+              href={getUri('tag', makeSlugText(tag.id))}
+            >
+              ...more
+            </a>
+          )}
+        </h2>
+      </div>
+
+      <div class="thi-box-code overflow-hidden">
+        <PostList
+          posts={notes}
+          postType="PostSimple"
+          postTypeOpts={defaultPostTypeOpts}
+          options={{
+            class: 'flex flex-col divide-y',
+          }}
+        />
+      </div>
+    </div>
+  )
+}

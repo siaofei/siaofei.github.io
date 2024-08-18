@@ -1,0 +1,125 @@
+---
+/**
+ * Topic (tag) Page
+ * @param _props
+ */
+
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import { getCollection } from 'astro:content'
+import { getFilteredPosts } from '@utils/getFilteredPosts'
+import { generateIconUri, makeSlugText } from '@utils/helpers'
+import { bodyPadding, containerWide, defaultPostTypeOpts } from '@/consts'
+
+import Container from '@components/Container.astro'
+import Footer from '@components/Footer.astro'
+import HeaderPage from '@components/header/HeaderPage.astro'
+import PostList from '@components/PostList.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+export const getStaticPaths = (async () => {
+  const tags = await getCollection('topics')
+
+  return tags.map((tag) => {
+    return {
+      params: { tag: makeSlugText(tag.id) },
+      props: { tag },
+    }
+  })
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { tag } = Astro.props
+
+const title = `话题#${tag.data.name}`
+
+const metadata = {
+  title: title,
+}
+
+const blogPosts = await getFilteredPosts({ type: 'blog', tags: { multi_select: [tag.id] } })
+const posts = await getFilteredPosts({ type: 'note', tags: { multi_select: [tag.id] } })
+const pinnedPosts = await getFilteredPosts({
+  type: 'note',
+  pinned: true,
+  tags: { multi_select: [tag.id] },
+})
+---
+
+<BaseLayout metadata={metadata}>
+  <div class="thi-bg-stone">
+    <HeaderPage
+      headerType="gray"
+      headerWidth="wide"
+      title={tag.data.longName ? `${tag.data.longName} (${tag.data.name})` : tag.data.name}
+      subtitle={tag.data.description}
+      icon={{ sourceUrl: generateIconUri(tag.data.icon), width: 60, height: 60 }}
+    />
+    <Container class:list={[bodyPadding, containerWide]}>
+      {
+        posts.length === 0 && blogPosts && blogPosts.length === 0 && (
+          <div class="my-4 text-xl">暂时还没有博客和笔记！</div>
+        )
+      }
+      {
+        (posts.length > 0 || (blogPosts && blogPosts.length > 0)) && (
+          <div class="flex flex-col gap-8">
+            {/* BlogPosts */}
+            {blogPosts && blogPosts.length > 0 && (
+              <div class="flex flex-col gap-2 overflow-hidden">
+                <div class="flex flex-row items-center gap-2">
+                  <h2 class="font-heading text-xl text-slate-700">文章</h2>
+                  {blogPosts.length >= 4 && (
+                    <a href="/blogs/" class="hover:m2it-link-hover italic text-slate-600">
+                      ...more
+                    </a>
+                  )}
+                </div>
+
+                <PostList
+                  posts={blogPosts}
+                  postType="PostCardWave"
+                  postTypeOpts={defaultPostTypeOpts}
+                  options={{
+                    class:
+                      'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-4',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* {pinnedPosts} */}
+            {pinnedPosts.length > 0 && (
+              <div class="thi-box-code overflow-hidden">
+                <PostList
+                  posts={pinnedPosts}
+                  postType="PostSimple"
+                  postTypeOpts={{ ...defaultPostTypeOpts, showPinned: true }}
+                  options={{
+                    class: 'flex flex-col divide-y',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Posts */}
+            {posts.length > 0 && (
+              <div class="overflow-hidden">
+                <PostList
+                  posts={posts}
+                  postType={'PostSimple'}
+                  postTypeOpts={defaultPostTypeOpts}
+                  options={{
+                    class: 'flex flex-col divide-y thi-box-code',
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )
+      }
+    </Container>
+    <Footer footerType="gray" />
+  </div>
+</BaseLayout>

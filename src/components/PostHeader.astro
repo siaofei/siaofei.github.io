@@ -1,0 +1,162 @@
+---
+/**
+ * Post Header Component
+ *
+ * @todo reading time & words counter
+ *
+ * This component renders the header section of a blog post, including the title,
+ * date, tags, and an optional hero icon. It can also conditionally hide metadata
+ * or apply a discrete styling option.
+ *
+ * @param {CollectionEntry<'posts'>} post - The blog post entry containing the
+ * data to be displayed in the header.
+ * @param {boolean} [hideMeta=false] - If true, hides the post metadata (e.g., date, tags).
+ * @param {boolean} [discreteStyle=false] - If true, applies a more subtle, discrete styling to the header.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { getEntries } from 'astro:content'
+import { Icon } from 'astro-icon/components'
+import me from '@data/me'
+
+import Header from '@components/header/Header.astro'
+import DateComponent from '@components/widgets/DateComponent.astro'
+import PostHeaderTopics from './PostHeaderTopics.astro'
+import PostHeroIcon from './widgets/PostHeroIcon.astro'
+
+export const containerHeaderClass = 'max-w-full bg-slate-50 drop-shadow-sm py-4'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  hideMeta?: boolean
+  discreteStyle?: boolean
+}
+
+const { post, hideMeta, discreteStyle } = Astro.props
+
+const tags = await getEntries(post.data.tags)
+---
+
+{/* Main header with infos */}
+<Header headerType={!discreteStyle ? 'white' : 'gray'} headerWidth="normal">
+  <div class="flex w-full flex-col gap-5 overflow-hidden py-8 md:overflow-visible">
+    <div class:list={['flex flex-col items-center gap-3 sm:flex-row sm:items-start']}>
+      {/* icon */}
+      {post.data.featuredImage && <PostHeroIcon post={post} />}
+
+      {/* Title */}
+      <h1
+        class:list={[
+          'thi-text-rainbow inline items-baseline gap-2',
+          'font-bold leading-tight tracking-tight',
+          'text-center text-2xl sm:text-3xl md:text-left xl:text-4xl',
+        ]}
+      >
+        {post.data.title}
+      </h1>
+    </div>
+
+    {/* Authors & Date & meta */}
+    {
+      !hideMeta && (
+        <div class="flex w-full flex-wrap items-center justify-center gap-3 text-slate-100 sm:justify-start md:w-auto md:flex-nowrap">
+          {/* Author */}
+          <div class="flex items-center gap-2 text-base opacity-80">
+            <Icon name="RiUser3Line" class="-mr-1" />
+            {me.name}
+          </div>
+
+          {/* Text word count */}
+          <div>
+            <Icon name="TextWordCount" />
+          </div>
+
+          {/* Reading Time */}
+          <div>
+            <Icon name="OutlineTimer" />
+          </div>
+
+          {/* added */}
+          <div class="flex items-center gap-1 text-base opacity-80">
+            <Icon name="AiOutlineClockCircle" />
+            <DateComponent
+              humanize={true}
+              dateString={post.data.createdDate}
+              dateLabel="added"
+              format="MM dd, yyyy"
+            />
+          </div>
+
+          {/* draft */}
+          {post.data.draft && (
+            <div class="whitespace-nowrap rounded-xl bg-slate-100 px-3 py-0.5 text-[0.8rem] text-slate-700">
+              draft
+            </div>
+          )}
+
+          {/* status: show only not normal */}
+          <div
+            class="flex flex-wrap items-center justify-center gap-3 md:justify-start"
+            data-created-date={post.data.createdDate}
+            data-modified-date={post.data.date}
+            x-data="usePostDateStatus"
+          >
+            {/* Updated */}
+            <div
+              class:list={['items-start whitespace-nowrap rounded-xl px-3 py-0.5 text-sm']}
+              x-bind:class="{
+                          'text-slate-700 bg-slate-100': status === 'updated',
+                          'text-green-900 bg-green-200': status === 'updatedWithin'
+                        }"
+              x-show="['updated', 'updatedWithin'].includes(status)"
+              x-cloak
+            >
+              <DateComponent
+                dateLabel="updated"
+                humanize={true}
+                dateString={post.data.date!}
+                format="MMM DD, YYYY"
+              />
+            </div>
+
+            {/* New */}
+            <div
+              class="whitespace-nowrap rounded-xl bg-amber-200 px-3 py-0.5 text-[0.8rem] text-amber-900"
+              x-show="status === 'new'"
+              x-cloak
+            >
+              new
+            </div>
+          </div>
+
+          {/* Well written */}
+          {post.data.wellWritten && (
+            <div
+              class="tooltip-auto flex items-center justify-center"
+              data-title={'Well written, verified by the author.'}
+            >
+              <Icon name="HiMiniCheckBadge" class="mt-[-3px] inline-block text-xl text-[#dadada]" />
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    {/* Tags */}
+    {
+      tags && tags.length > 0 && (
+        <div class="flex flex-wrap items-center justify-center sm:justify-start">
+          <PostHeaderTopics
+            class="justify-center sm:justify-start"
+            tags={tags}
+            TiTagClass="text-slate-100"
+            tagClass="text-slate-700 bg-slate-50"
+          />
+        </div>
+      )
+    }
+  </div>
+</Header>
+
+<script src="../scripts/usePostDateStatus.ts"></script>

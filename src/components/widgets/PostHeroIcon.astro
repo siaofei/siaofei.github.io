@@ -1,0 +1,61 @@
+---
+/**
+ * Post Icon Component
+ *
+ * Renders an icon or image for a blog post, typically used in the hero section.
+ *
+ * Displays the `featuredImage` if available. If no `featuredImage` is present,
+ * a default icon is shown unless `hideDefaultIcon` is set to true.
+ *
+ * @param {CollectionEntry<'posts'>} post - The blog post entry containing
+ * the featured image data.
+ * @param {string} [class] - Optional CSS classes for the image or icon.
+ * @param {string} [wrapperClass] - Optional CSS classes for the wrapper element.
+ * @param {boolean} [hideDefaultIcon=false] - If true, hides the default icon
+ * when no featured image is present.
+ */
+
+import type { CollectionEntry } from 'astro:content'
+
+import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  class?: string
+  wrapperClass?: string
+  hideDefaultIcon?: boolean
+}
+
+const { post, class: className, wrapperClass, hideDefaultIcon = false } = Astro.props
+---
+
+<div class:list={['notion-page-icon-hero', wrapperClass]}>
+  {
+    post.data.featuredImage && (
+      <Image
+        src={post.data.featuredImage}
+        alt={post.data.featuredImageAlt || 'page icon'}
+        class:list={[className, 'notion-page-icon']}
+      />
+    )
+  }
+  {
+    !post.data.featuredImage && !hideDefaultIcon && (
+      <Icon name="default-page-icon" class:list={[className, 'notion-page-icon']} />
+    )
+  }
+</div>
+
+<style>
+  .notion-page-icon-hero {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    font-size: 38px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
