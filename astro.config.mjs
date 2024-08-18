@@ -1,5 +1,6 @@
 import alpinejs from '@astrojs/alpinejs'
 import tailwind from '@astrojs/tailwind'
+import { transformerNotationDiff } from '@shikijs/transformers'
 import icon from 'astro-icon'
 import { defineConfig } from 'astro/config'
 
@@ -14,6 +15,7 @@ export default defineConfig({
         light: 'catppuccin-latte',
         dark: 'catppuccin-mocha',
       },
+      transformers: [transformerNotationDiff()],
     },
   },
   integrations: [
