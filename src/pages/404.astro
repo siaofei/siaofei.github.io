@@ -1,0 +1,74 @@
+---
+/**
+ * Not Found Page (404)
+ */
+
+import type { Metadata } from '@layouts/BaseLayout.astro'
+
+import me from '@data/me'
+import { containerNormal } from '@/consts'
+
+import Container from '@components/Container.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+const metadata = {
+  title: '页面不见了！',
+} as Metadata
+---
+
+<BaseLayout metadata={metadata}>
+  <Container class:list={['h-screen', containerNormal]}>
+    <div class="flex h-full w-full flex-col items-center justify-center gap-6">
+      <h1 class="text-3xl text-slate-800">
+        页面未发现，<span class="text-pink-700">可能是我的错</span>！
+      </h1>
+      <div class="flex flex-col gap-2 text-lg text-slate-800">
+        <div class="flex items-baseline gap-2">
+          <div
+            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-700 p-2 text-white"
+          >
+            1
+          </div>
+          <div>
+            请<strong>刷新页面</strong>重试，因为有时候一些页面可能第一次访问并不会加载。
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <div
+            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-700 p-2 text-white"
+          >
+            2
+          </div>
+          <div>
+            请使用网站<strong>搜索</strong>。
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <div
+            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-700 p-2 text-white"
+          >
+            3
+          </div>
+          <div>
+            有时渲染页面会遇到一些技术原因，请<strong>稍等片刻</strong>！
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <div
+            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-700 p-2 text-white"
+          >
+            4
+          </div>
+          <div>
+            请联系我<a class="hover:text-pink-600 hover:underline" href={`mailto:${me.email}`}>
+              💌 {me.email}
+            </a>。
+          </div>
+        </div>
+      </div>
+      <p class="text-xl">
+        <a class="m2it-link hover:m2it-link-hover font-semibold" href="/">返回主页</a>
+      </p>
+    </div>
+  </Container>
+</BaseLayout>

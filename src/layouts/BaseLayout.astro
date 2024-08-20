@@ -47,7 +47,9 @@ const { metadata } = Astro.props
   <body>
     <div class="flex min-h-screen flex-col justify-between">
       <Nav />
-      <main class="mb-auto" transition:animate="fade"><slot /></main>
+      <div class="mb-auto" transition:animate="fade">
+        <main><slot /></main>
+      </div>
     </div>
   </body>
 </html>
