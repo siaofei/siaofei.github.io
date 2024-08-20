@@ -1,10 +1,24 @@
 import typography from '@tailwindcss/typography'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            color: '#444',
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+          },
+        },
+      },
       backgroundImage: {
         'repeating-dots':
           'repeating-radial-gradient(center center,#777,#777 1px,transparent 0,transparent 100%)',
@@ -67,7 +81,19 @@ export default {
         '8xl': '6.25rem',
       },
       fontFamily: {
-        heading: ['Recoleta', 'Arial', 'Helvetica', 'sans-serif'],
+        sans: [
+          '"Inter Variable"',
+          '"Alimama DongFangDaKai"',
+          'TW Kai',
+          ...defaultTheme.fontFamily.sans,
+        ],
+        mono: [
+          '"Cascadia Code NF"',
+          '"Alimama DongFangDaKai"',
+          '"TW Kai"',
+          ...defaultTheme.fontFamily.mono,
+        ],
+        heading: ['Recoleta', 'hongleixingshu', 'Arial', 'Helvetica', 'sans-serif'],
       },
       boxShadow: {
         small: '0 5px 10px rgba(0, 0, 0, 0.12)',
