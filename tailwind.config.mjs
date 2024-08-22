@@ -10,12 +10,6 @@ export default {
         DEFAULT: {
           css: {
             color: '#444',
-            'code::before': {
-              content: '""',
-            },
-            'code::after': {
-              content: '""',
-            },
           },
         },
       },
