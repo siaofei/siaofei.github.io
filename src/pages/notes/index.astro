@@ -33,6 +33,8 @@
  * across the site.
  */
 
+import type { DataEntryMap } from 'astro:content'
+
 import { getEntries } from 'astro:content'
 import { getFilteredPosts } from '@utils/getFilteredPosts'
 import { bodyPadding, containerWide } from '@/consts'
@@ -62,11 +64,29 @@ const pinnedPosts = await getFilteredPosts({ type: 'note', pinned: true, match: 
 /* all note posts */
 const posts = await getFilteredPosts({ type: 'note' })
 
-/* All pinned tags that have at least one related note post. */
-const tags = await Promise.all(posts.map(async (post) => await getEntries(post.data.tags)))
-const pinnedTags = [...new Set(tags.flat())].filter((tag) => tag.data.pinned === true)
-const others = pinnedTags.find((tag) => tag.data.name === 'Others')
-const pinnedTagsSorted = pinnedTags.filter((tag) => tag.data.name != 'Others')
+/**
+ * Get unique tags from all note posts.
+ * Every tag has at least one related note post.
+ */
+const _tags = Array.from(
+  posts
+    .flatMap((post) => post.data.tags)
+    .reduce(
+      (map, currentValue) => map.set(currentValue.id, currentValue),
+      new Map<
+        keyof DataEntryMap['topics'],
+        { collection: 'topics'; id: keyof DataEntryMap['topics'] }
+      >(),
+    )
+    .values(),
+)
+const tags = await getEntries(_tags)
+const pinnedTags = tags.filter((tag) => tag.data.pinned === true)
+const others = pinnedTags.find((tag) => tag.data.name === 'others')
+// Type cast 'others' to avoid TypeScript type compatibility complaints.
+const pinnedTagsSorted = pinnedTags.filter(
+  (tag) => tag.id !== ('others' as keyof DataEntryMap['topics']),
+)
 if (others) pinnedTagsSorted.push(others)
 
 const numBlogPosts = 6
