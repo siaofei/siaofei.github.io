@@ -1,3 +1,5 @@
+@import 'callout.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -133,6 +135,47 @@
 @layer base {
   html {
     font-size: 14.5px;
+    scroll-behavior: smooth;
+  }
+
+  :root {
+    /* Used for Expressive code: value from typography */
+    --ec-code-font-family: 'Cascadia Code NF', 'Alimama DongFangDaKai', 'TW Kai';
+    --ec-code-font-size: 0.875em;
+    --ec-code-line-height: 1.7142875;
+    --ec-ui-font-family: 'Cascadia Code NF', 'Alimama DongFangDaKai', 'TW Kai';
+    --ec-ui-font-size: 0.875em;
+    --ec-ui-line-height: 1.7142875;
+  }
+
+  @media (min-width: 640px) {
+    /* Tailwind 'sm' breakpoint */
+    :root {
+      --ec-code-font-size: 0.8571429em;
+      --ec-code-line-height: 1.666667;
+      --ec-ui-font-size: 0.8571429em;
+      --ec-ui-line-height: 1.666667;
+    }
+  }
+
+  @media (min-width: 768px) {
+    /* Tailwind 'md' breakpoint */
+    :root {
+      --ec-code-font-size: 0.888889em;
+      --ec-code-line-height: 1.75;
+      --ec-ui-font-size: 0.88889em;
+      --ec-ui-line-height: 1.75;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    /* Tailwind 'lg' breakpoint */
+    :root {
+      --ec-code-font-size: 0.9em;
+      --ec-code-line-height: 1.7777778;
+      --ec-ui-font-size: 0.9em;
+      --ec-ui-line-height: 1.7777778;
+    }
   }
 
   [x-cloak] {
@@ -155,7 +198,6 @@
 
   .m2it-headings {
     @apply my-0 font-semibold text-slate-800;
-    @apply bg-gradient-to-r from-blue-200 from-5% via-sky-100 via-30% to-sky-50 to-50%;
   }
 
   .m2it-prose-img {
@@ -179,7 +221,7 @@
   }
 
   .m2it-code {
-    @apply break-words rounded-md bg-gray-100 p-[1px_4px_2px_4px];
+    @apply break-words rounded-md bg-gray-100;
     @apply font-mono text-[90%] font-normal;
     @apply before:content-[''] after:content-[''];
   }
@@ -198,6 +240,7 @@
     @apply prose-headings:m2it-headings;
     @apply prose-img:m2it-prose-img;
     @apply prose-blockquote:m2it-blockquote;
+    @apply prose-code:m2it-code;
     @apply prose-h1:text-[1.55rem];
     @apply prose-h2:text-[1.45rem];
     @apply prose-h3:text-[1.35rem];
