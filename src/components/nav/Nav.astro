@@ -5,10 +5,10 @@
 
 import type { MenuType } from '@data/menus'
 
-import { containerWide } from '@/consts'
-import Container from '@components/Container.astro'
 import { MENUS } from '@data/menus'
+import { containerWide } from '@/consts'
 
+import Container from '@components/Container.astro'
 import NavAvatar from './NavAvatar.astro'
 import NavHidden from './NavHidden.astro'
 import NavSearch from './NavSearch.astro'
@@ -22,6 +22,7 @@ export const groupSpaceClass = 'ml-2 md:ml-4'
 type Props = Record<string, never>
 
 const navHeight = 'h-14'
+export const paddingTopNav = 'pt-14' // Must be the same as navHeight!
 const navClasses = 'bg-nav-dark-bg shadow-transparent text-gray-300'
 ---
 
