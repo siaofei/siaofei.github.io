@@ -1,0 +1,14 @@
+---
+name: Astro
+# Uncomment to add a long name for the topic
+# longName: Optional long name
+# Uncomment to add a description for the topic
+description: The web framework for content-driven websites
+# Uncomment to pin this topic
+pinned: true
+# Uncomment to specify an icon for the topic (svg willomit ".svg" if using SVG)
+icon: astro # Path in /public/topics/
+# Uncomment to add CSS class properties for the topic icon
+# class: invert # Invert icon color
+# Uncomment to specify a color for the topic icon
+# color: black
